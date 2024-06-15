@@ -1,0 +1,1 @@
+java -jar target\mobility-1.0.jar

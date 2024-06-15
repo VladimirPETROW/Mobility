@@ -1,0 +1,93 @@
+.body-login {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #eee;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: 400;
+}
+.form-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.navbar {
+    background: #f5f6f7 !important;
+    box-shadow: 0 0.1rem 0.5rem rgba(0,0,0,0.15),inset 0 -1px 0 rgba(255,255,255,0.15);
+    z-index: 100;
+}
+
+.div-table-sticky {
+    position: relative;
+    top: 56px;
+    width: 100%;
+    z-index: 10;
+}
+.div-table-sticky .table {
+    border-collapse: separate;
+    border-spacing: 0px;
+}
+.div-table-sticky .table thead {
+    position: sticky;
+    top: 56px;
+    z-index: 20;
+}
+.div-table-sticky .tbody {
+    z-index: 10;
+}
+.div-table-sticky .table td, th {
+    border: 1px solid #cccccc;
+}
+.div-table-sticky .table th:first-child {
+    position: sticky;
+    left: 0px;
+}
+
+.div-table-action {
+    position: relative;
+}
+.div-table-action .div-action {
+    position: fixed;
+    top: 56px;
+    width: 100%;
+    height: 56px;
+    padding: 10px;
+    background: #ffffff;
+    z-index: 30;
+}
+.div-table-action .div-table-sticky {
+    top: 112px;
+}
+.div-table-action .div-table-sticky .table thead {
+    top: 112px;
+}
+
+.div-action .btn-light {
+    --bs-btn-hover-bg: #edeeef;
+}

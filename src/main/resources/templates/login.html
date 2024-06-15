@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Вход</title>
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body class="body-login">
+<div class="container">
+  <form th:action="@{/login}" class="form-signin" method="post">
+    <h2 class="form-signin-heading text-center">Добро пожаловать</h2>
+    <div th:if="${param.error}" class="alert alert-danger" role="alert">Недействительное имя пользователя или пароль.</div>
+    <div th:if="${param.logout}" class="alert alert-success" role="alert">Вы вышли</div>
+    <p>
+      <!--label for="username" class="sr-only">Имя пользователя</label-->
+      <input type="text" id="username" name="username" class="form-control" placeholder="Имя" required autofocus>
+    </p>
+    <p>
+      <!--label for="password" class="sr-only">Пароль</label-->
+      <input type="password" id="password" name="password" class="form-control" placeholder="Пароль" required>
+    </p>
+    <button class="btn btn-lg btn-light btn-block w-100" type="submit">Войти</button>
+  </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Выход</title>
+  <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+  <link th:href="@{/css/main.css}" rel="stylesheet">
+</head>
+<body class="body-login">
+<div class="container">
+  <form th:action="@{/logout}" class="form-signin" method="post">
+    <h2 class="form-signin-heading text-center">Вы действительно хотите выйти?</h2>
+    <button class="btn btn-lg btn-light btn-block w-100" type="submit">Выйти</button>
+  </form>
+</div>
+</body>

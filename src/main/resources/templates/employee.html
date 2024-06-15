@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Сотрудники</title>
+        <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href="@{/css/main.css}" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand bg-light position-fixed w-100">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/demand}">Заявки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/passenger}">Пассажиры</a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link active" aria-current="page">Сотрудники</span>
+                        </li>
+                    </ul>
+                </div>
+                <span th:if="${role!='ROLE_WORKER'}" class="nav-text me-3"></span>
+                <div th:if="${role!='ROLE_WORKER'}" class="btn-group">
+                    <a th:text="${name}" class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        User
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <!--li><a class="dropdown-item" href="#">Изменить Пароль</a></li-->
+                        <li><a class="dropdown-item" th:href="@{/logout}">Выход</a></li>
+                    </ul>
+                </div>
+                <span th:if="${role=='ROLE_WORKER'}" th:text="${name}" class="nav-text me-3">User</span>
+                <div th:if="${role=='ROLE_WORKER'}" class="btn-group">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownStatus" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        На работе
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end ms-auto" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">На работе</a></li>
+                        <li><a class="dropdown-item" href="#">Обед</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <!--li><a class="dropdown-item" href="#">Изменить Пароль</a></li-->
+                        <li><a class="dropdown-item" th:href="@{/logout}">Выход</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="div-table-sticky">
+            <table class="table table-hover">
+                <thead class="table-primary">
+                    <!--th>Логин</th-->
+                    <th>ФИО</th>
+                    <th>Участок</th>
+                    <th>Смена</th>
+                    <th>Начало</th>
+                    <th>Окончание</th>
+                    <th>Должность</th>
+                    <th>М/Ж</th>
+                    <th>Табельный номер</th>
+                </thead>
+                <tbody>
+                    <tr th:each="emp: ${employees}">
+                        <!--th class="table-primary" th:if="${emp.user==null}"></th>
+                        <th class="table-primary" th:if="${emp.user!=null}" th:text="${emp.user.username}"></th-->
+                        <th class="table-primary" th:text="${emp.nameFull}"></th>
+                        <td th:text="${emp.area}"></td>
+                        <td th:text="${emp.shift}"></td>
+                        <td th:text="${emp.timeBegin}"></td>
+                        <td th:text="${emp.timeEnd}"></td>
+                        <td th:text="${emp.rank}"></td>
+                        <td th:text="${emp.gender}"></td>
+                        <td th:text="${emp.num}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    </body>
+</html>
