@@ -73,7 +73,9 @@
                 <table class="table table-hover">
                     <thead class="table-primary">
                         <tr>
-                            <th th:text="${timeline.datePlan}" class="align-center" rowspan="2"></th>
+                            <th class="align-center" rowspan="2">
+                                <nobr th:text="${timeline.datePlan}"></nobr>
+                            </th>
                             <th th:each="point: ${timeline.points}" th:text="${#temporals.format(point.datetime.toLocalTime(), 'HH:mm')}" th:class="${'align-center' + (point.datetime.toLocalDate().isEqual(timeline.datePlan) ? '' : ' time-date-other')}" colspan="2"></th>
                         </tr>
                         <tr class="points">
@@ -114,7 +116,7 @@
                             <th:block th:each="series, seriesState: ${work.getValue()}">
                                 <tr>
                                     <th th:if="${seriesState.first}" class="table-primary" th:rowspan="${seriesState.size}">
-                                        <nobr th:text="${work.getKey().nameFull + ' [' + work.getKey().getArea() + ', ' + work.getKey().gender + ']'}"></nobr>
+                                        <nobr th:text="${work.getKey().nameFull + ' [' + work.getKey().getArea() + ', ' + work.getKey().getRank() + ', ' + work.getKey().gender + ']'}"></nobr>
                                     </th>
                                     <th:block th:each="interval, state: ${series}">
                                         <th:block th:if="${state.first}">

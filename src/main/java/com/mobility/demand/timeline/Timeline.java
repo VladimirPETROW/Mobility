@@ -22,13 +22,25 @@ public class Timeline {
     public ArrayList<ArrayList<Way>> remaining;
     public ArrayList<Map.Entry<Employee, ArrayList<ArrayList<Way>>>> completed;
 
-    public Timeline(LocalDate dPlan, List<Demand> dems, HashMap<Integer, HashMap<Integer, Integer>> dists) {
+    public Timeline(LocalDate dPlan, List<Demand> dems, List<Employee> emps, HashMap<Integer, HashMap<Integer, Integer>> dists) {
         datePlan = dPlan;
 
         HashSet<LocalDateTime> datetimes = new HashSet<>();
         ArrayList<TreeMap<LocalDateTime, Way>> remainingTasks = new ArrayList<>();
-        HashMap<Employee, Worker> workers = new HashMap<>();
         HashMap<Worker, ArrayList<TreeMap<LocalDateTime, Way>>> completedTasks = new HashMap<>();
+
+        HashMap<Employee, Worker> workers = new HashMap<>();
+        for (Employee emp : emps) {
+            Worker worker = new Worker(emp);
+            workers.put(emp, worker);
+            worker.setBeginEnd(dPlan);
+            for (Track track : worker.dtFree.values()) {
+                datetimes.add(track.dtBegin);
+                datetimes.add(track.dtEnd);
+            }
+            ArrayList<TreeMap<LocalDateTime, Way>> tasks = new ArrayList<>();
+            completedTasks.put(worker, tasks);
+        }
 
         for (Demand d : dems) {
             if (Distributor.cancelStatus.contains(d.getStatus())) continue;
@@ -36,27 +48,14 @@ public class Timeline {
             datetimes.add(support.track.dtBegin);
             datetimes.add(support.track.dtEnd);
 
-            List<Employee> emps = d.getEmp();
-            if (emps.isEmpty()) {
+            List<Employee> demEmps = d.getEmp();
+            if (demEmps.isEmpty()) {
                 addTask(new Way(support.getCaption(), support.track, Way.Kind.TASK), remainingTasks);
             }
             else {
-                for (Employee emp : emps) {
+                for (Employee emp : demEmps) {
                     Worker worker = workers.get(emp);
-                    if (worker == null) {
-                        worker = new Worker(emp);
-                        workers.put(emp, worker);
-                        worker.setBeginEnd(dPlan);
-                        for (Track track : worker.dtFree.values()) {
-                            datetimes.add(track.dtBegin);
-                            datetimes.add(track.dtEnd);
-                        }
-                    }
                     ArrayList<TreeMap<LocalDateTime, Way>> tasks = completedTasks.get(worker);
-                    if (tasks == null) {
-                        tasks = new ArrayList<>();
-                        completedTasks.put(worker, tasks);
-                    }
                     addTask(new Way(support.getCaption(), support.track, Way.Kind.TASK), tasks);
                     worker.addWork(support.track);
                 }

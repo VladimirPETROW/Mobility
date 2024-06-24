@@ -102,9 +102,10 @@ public class DemandService {
         if (distributeDates.size() > 0) {
             HashMap<Integer, HashMap<Integer, Integer>> dists = getDistances();
 
+            List<Employee> employees = employeeRepository.findAll();
             LocalDate datePlan = distributeDates.get(0).toLocalDate();
             List<Demand> demands = demandRepository.findAllByDatePlan(datePlan);
-            Timeline timeline = new Timeline(datePlan, demands, dists);
+            Timeline timeline = new Timeline(datePlan, demands, employees, dists);
             return timeline;
         }
         return null;
