@@ -1,7 +1,7 @@
 .body-login {
   padding-top: 40px;
   padding-bottom: 40px;
-  background-color: #eee;
+  background-color: #eeeeee;
 }
 
 .form-signin {
@@ -68,6 +68,21 @@
     position: sticky;
     left: 0px;
 }
+.div-table-sticky .table thead .points td:first-child,
+.div-table-sticky .table thead .points td:last-child {
+    width: 50%;
+}
+.div-table-sticky .table thead .align-center {
+    vertical-align: middle;
+    text-align: center;
+}
+.div-table-sticky .table thead tr .time-point-left {
+    border-left: 1px solid #000000;
+    background-color: #ffffff;
+}
+.div-table-sticky .table thead tr .time-point-right {
+    background-color: #ffffff;
+}
 
 .div-table-action {
     position: relative;
@@ -91,3 +106,18 @@
 .div-action .btn-light {
     --bs-btn-hover-bg: #edeeef;
 }
+
+.task-remaining {
+    background-color: #FFC2E6 !important;
+}
+.task-completed {
+    background-color: #FFEBC2 !important;
+}
+.task-free {
+    background-color: #C6FFC2 !important;
+}
+
+.time-date-other {
+    background-color: #ffffff !important;
+}
+

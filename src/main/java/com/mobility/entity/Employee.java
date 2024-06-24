@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity

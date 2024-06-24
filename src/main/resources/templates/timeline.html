@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>График</title>
+        <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href="@{/css/main.css}" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand bg-light position-fixed w-100">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/demand}">Заявки</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/passenger}">Пассажиры</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/employee}">Сотрудники</a>
+                        </li>
+                        <li class="nav-item">
+                            <span class="nav-link active" aria-current="page">График</span>
+                        </li>
+                    </ul>
+                </div>
+                <span th:if="${role!='ROLE_WORKER'}" class="nav-text me-3"></span>
+                <div th:if="${role!='ROLE_WORKER'}" class="btn-group">
+                    <a th:text="${name}" class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        User
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <!--li><a class="dropdown-item" href="#">Изменить Пароль</a></li-->
+                        <li><a class="dropdown-item" th:href="@{/logout}">Выход</a></li>
+                    </ul>
+                </div>
+                <span th:if="${role=='ROLE_WORKER'}" th:text="${name}" class="nav-text me-3">User</span>
+                <div th:if="${role=='ROLE_WORKER'}" class="btn-group">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownStatus" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        На работе
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end ms-auto" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#">На работе</a></li>
+                        <li><a class="dropdown-item" href="#">Обед</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <!--li><a class="dropdown-item" href="#">Изменить Пароль</a></li-->
+                        <li><a class="dropdown-item" th:href="@{/logout}">Выход</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="div-table-action">
+            <div class="div-action container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <form th:action="@{/timeline/distribute}" method="post">
+                            <button type="submit" class="btn btn-light">Распределение</button>
+                        </form>
+                    </div>
+                    <div class="col text-end">
+                        <form th:action="@{/timeline/clear}" method="post">
+                            <button type="submit" class="btn btn-light">Сброс</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="div-table-sticky">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th th:text="${timeline.datePlan}" class="align-center" rowspan="2"></th>
+                            <th th:each="point: ${timeline.points}" th:text="${#temporals.format(point.datetime.toLocalTime(), 'HH:mm')}" th:class="${'align-center' + (point.datetime.toLocalDate().isEqual(timeline.datePlan) ? '' : ' time-date-other')}" colspan="2"></th>
+                        </tr>
+                        <tr class="points">
+                            <td class="time-point-right"></td>
+                            <th:block th:each="point, state: ${timeline.points}">
+                                <td th:if="${not state.last}" class="time-point-left time-point-right" colspan="2"></td>
+                            </th:block>
+                            <td class="time-point-left"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <th:block th:each="series: ${timeline.remaining}">
+                            <tr>
+                                <th class="table-primary"></th>
+                                <th:block th:each="interval, state: ${series}">
+                                    <th:block th:if="${state.first}">
+                                        <td th:if="${interval.isEmpty()}" th:colspan="${1 + interval.duration * 2}"></td>
+                                        <th:block th:if="${interval.isTask()}">
+                                            <td></td>
+                                            <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-remaining"></td>
+                                        </th:block>
+                                    </th:block>
+                                    <th:block th:if="${!state.first && !state.last}">
+                                        <td th:if="${interval.isEmpty()}" th:colspan="${interval.duration * 2}"></td>
+                                        <td th:if="${interval.isTask()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-remaining"></td>
+                                    </th:block>
+                                    <th:block th:if="${state.last}">
+                                        <td th:if="${interval.isEmpty()}" th:colspan="${(interval.duration * 2) + 1}"></td>
+                                        <th:block th:if="${interval.isTask()}">
+                                            <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-remaining"></td>
+                                            <td></td>
+                                        </th:block>
+                                    </th:block>
+                                </th:block>
+                            </tr>
+                        </th:block>
+                        <th:block th:each="work: ${timeline.completed}">
+                            <th:block th:each="series, seriesState: ${work.getValue()}">
+                                <tr>
+                                    <th th:if="${seriesState.first}" class="table-primary" th:rowspan="${seriesState.size}">
+                                        <nobr th:text="${work.getKey().nameFull + ' [' + work.getKey().getArea() + ', ' + work.getKey().gender + ']'}"></nobr>
+                                    </th>
+                                    <th:block th:each="interval, state: ${series}">
+                                        <th:block th:if="${state.first}">
+                                            <td th:if="${interval.isEmpty()}" th:colspan="${1 + interval.duration * 2}"></td>
+                                            <th:block th:if="${interval.isFree()}">
+                                                <td></td>
+                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-free"></td>
+                                            </th:block>
+                                            <th:block th:if="${interval.isTask()}">
+                                                <td></td>
+                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-completed"></td>
+                                            </th:block>
+                                        </th:block>
+                                        <th:block th:if="${!state.first && !state.last}">
+                                            <td th:if="${interval.isEmpty()}" th:colspan="${interval.duration * 2}"></td>
+                                            <td th:if="${interval.isFree()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-free"></td>
+                                            <td th:if="${interval.isTask()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-completed"></td>
+                                        </th:block>
+                                        <th:block th:if="${state.last}">
+                                            <td th:if="${interval.isEmpty()}" th:colspan="${(interval.duration * 2) + 1}"></td>
+                                            <th:block th:if="${interval.isFree()}">
+                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-free"></td>
+                                                <td></td>
+                                            </th:block>
+                                            <th:block th:if="${interval.isTask()}">
+                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-completed"></td>
+                                                <td></td>
+                                            </th:block>
+                                        </th:block>
+                                    </th:block>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    </body>
+</html>

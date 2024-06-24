@@ -1,6 +1,7 @@
 package com.mobility.service;
 
-import com.mobility.demand.DemandContext;
+import com.mobility.demand.Distributor;
+import com.mobility.demand.timeline.Timeline;
 import com.mobility.entity.Demand;
 import com.mobility.entity.Distance;
 import com.mobility.entity.Employee;
@@ -34,6 +35,30 @@ public class DemandService {
         return demands;
     }
 
+    HashMap<Integer, HashMap<Integer, Integer>> getDistances() {
+        List<Distance> distances = distanceRepository.findAll();
+        HashMap<Integer, HashMap<Integer, Integer>> dists = new HashMap<>();
+        for (Distance distance : distances) {
+            int stFirst = distance.getStFirst().getId();
+            int stSecond = distance.getStSecond().getId();
+            //First
+            HashMap<Integer, Integer> stDists = dists.get(stFirst);
+            if (stDists == null) {
+                stDists = new HashMap<>();
+                dists.put(stFirst, stDists);
+            }
+            stDists.put(stSecond, distance.getEmpMin());
+            //Second
+            stDists = dists.get(stSecond);
+            if (stDists == null) {
+                stDists = new HashMap<>();
+                dists.put(stSecond, stDists);
+            }
+            stDists.put(stFirst, distance.getEmpMin());
+        }
+        return dists;
+    }
+
     @Transactional
     public void distribute() {
         long elapsed = - System.currentTimeMillis();
@@ -41,27 +66,7 @@ public class DemandService {
 
         List<Date> distributeDates = demandRepository.findDistributeDates();
         if (distributeDates.size() > 0) {
-            //Distances
-            List<Distance> distances = distanceRepository.findAll();
-            HashMap<Integer, HashMap<Integer, Integer>> dists = new HashMap<>();
-            for (Distance distance : distances) {
-                int stFirst = distance.getStFirst().getId();
-                int stSecond = distance.getStSecond().getId();
-                //First
-                HashMap<Integer, Integer> stDists = dists.get(stFirst);
-                if (stDists == null) {
-                    stDists = new HashMap<>();
-                    dists.put(stFirst, stDists);
-                }
-                stDists.put(stSecond, distance.getEmpMin());
-                //Second
-                stDists = dists.get(stSecond);
-                if (stDists == null) {
-                    stDists = new HashMap<>();
-                    dists.put(stSecond, stDists);
-                }
-                stDists.put(stFirst, distance.getEmpMin());
-            }
+            HashMap<Integer, HashMap<Integer, Integer>> dists = getDistances();
 
             List<Employee> employees = employeeRepository.findAll();
             for (Date date : distributeDates) {
@@ -69,21 +74,39 @@ public class DemandService {
 
                 log.info(String.format("Distribute for datePlan: %1$td.%1$tm.%1$tY", datePlan));
 
-                List<Demand> demands = demandRepository.findAllByDatePlanAndStatusIn(datePlan, new String[] {"Заявка закончена", "Отказ по регламенту"});
-                DemandContext demandContext = new DemandContext(datePlan, demands, employees, dists);
-                demandContext.distribute();
-                int distributed = 0;
-                for (Demand dem : demands) {
-                    if (!dem.getEmp().isEmpty()) {
-                        distributed++;
-                    }
-                }
+                List<Demand> demands = demandRepository.findAllByDatePlan(datePlan);
+                Distributor distributor = new Distributor(datePlan, demands, employees, dists);
+                distributor.distribute();
 
-                log.info(String.format("Distributed %d of %d.", distributed, demands.size()));
+                int distributed = distributor.completed.size();
+                int count = distributed + distributor.remaining.size();
+
+                log.info(String.format("Distributed %d of %d.", distributed, count));
             }
         }
 
         elapsed += System.currentTimeMillis();
         log.info(String.format("Elapsed total time: %d second(s)", (int) Math.ceil((double) elapsed / 1000)));
-   }
+    }
+
+    @Transactional
+    public void clear() {
+        List<Demand> demands = demandRepository.findAll();
+        for (Demand dem : demands) {
+            dem.getEmp().clear();
+        }
+    }
+
+    public Timeline createTimeline() {
+        List<Date> distributeDates = demandRepository.findDistributeDates();
+        if (distributeDates.size() > 0) {
+            HashMap<Integer, HashMap<Integer, Integer>> dists = getDistances();
+
+            LocalDate datePlan = distributeDates.get(0).toLocalDate();
+            List<Demand> demands = demandRepository.findAllByDatePlan(datePlan);
+            Timeline timeline = new Timeline(datePlan, demands, dists);
+            return timeline;
+        }
+        return null;
+    }
 }

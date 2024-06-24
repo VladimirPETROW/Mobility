@@ -24,6 +24,9 @@
                         <li class="nav-item">
                             <a class="nav-link" th:href="@{/employee}">Сотрудники</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:href="@{/timeline}">График</a>
+                        </li>
                     </ul>
                 </div>
                 <span th:if="${role!='ROLE_WORKER'}" class="nav-text me-3"></span>
@@ -52,10 +55,19 @@
             </div>
         </nav>
         <div class="div-table-action">
-            <div class="div-action">
-                <form th:action="@{/demand/distribute}" method="post">
-                    <button type="submit" class="btn btn-light">Распределение</button>
-                </form>
+            <div class="div-action container-fluid">
+                <div class="row">
+                    <div class="col">
+                        <form th:action="@{/demand/distribute}" method="post">
+                            <button type="submit" class="btn btn-light">Распределение</button>
+                        </form>
+                    </div>
+                    <div class="col text-end">
+                        <form th:action="@{/demand/clear}" method="post">
+                            <button type="submit" class="btn btn-light">Сброс</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="div-table-sticky">
                 <table class="table table-hover">
@@ -75,7 +87,7 @@
                     </thead>
                     <tbody>
                         <tr th:each="dem: ${demands}">
-                            <th class="table-primary" th:text="${dem.id}"></th>
+                            <th th:text="${dem.id}" class="table-primary"></th>
                             <td th:text="${dem.datePlan}"></td>
                             <td th:text="${dem.timePlan}"></td>
                             <td th:text="${#temporals.format(dem.duration, 'HH:mm:ss')}"></td>
