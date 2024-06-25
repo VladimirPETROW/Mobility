@@ -69,7 +69,8 @@ public class Distributor {
             if (workerEnd.isBefore(supportTrack.dtEnd)) continue;
             // lunch
             boolean lunch = false;
-            for (Track track : worker.dtFree.values()) {
+            Map.Entry<LocalDateTime, LocalDateTime> work = worker.dtWork.floorEntry(supportTrack.dtBegin);
+            for (Track track : worker.dtFree.subMap(work.getKey(), true, work.getValue(), true).values()) {
                 LocalDateTime dtBegin = track.dtBegin;
                 LocalDateTime dtEnd = track.dtEnd;
                 if (dtEnd.isBefore(supportTrack.dtEnd) || (dtBegin.isAfter(supportTrack.dtBegin))) {

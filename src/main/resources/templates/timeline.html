@@ -79,7 +79,7 @@
                             <th class="align-middle text-center" rowspan="2">
                                 <nobr th:text="${timeline.datePlan}"></nobr>
                             </th>
-                            <th th:each="point: ${timeline.points}" th:text="${#temporals.format(point.datetime.toLocalTime(), 'HH:mm')}" th:class="${'align-center' + (point.datetime.toLocalDate().isEqual(timeline.datePlan) ? '' : ' time-date-other')}" colspan="2"></th>
+                            <th th:each="point: ${timeline.points}" th:text="${#temporals.format(point.datetime.toLocalTime(), 'HH:mm')}" th:class="${'align-middle text-center' + (point.datetime.toLocalDate().isEqual(timeline.datePlan) ? '' : ' time-date-other')}" colspan="2"></th>
                         </tr>
                         <tr class="points">
                             <td class="time-point-right"></td>
