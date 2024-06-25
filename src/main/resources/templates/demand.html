@@ -57,12 +57,15 @@
         <div class="div-table-action">
             <div class="div-action container-fluid">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-3">
                         <form th:action="@{/demand/distribute}" method="post">
                             <button type="submit" class="btn btn-light">Распределение</button>
                         </form>
                     </div>
-                    <div class="col text-end">
+                    <div class="col-6">
+                        <input id="filter" type="text" class="form-control filter-hidden" cookie="filter-demand" placeholder="Начните писать (точка . обозначает любой знак, звездочка * обозначает любое количество знаков)">
+                    </div>
+                    <div class="col-3 text-end">
                         <form th:action="@{/demand/clear}" method="post">
                             <button type="submit" class="btn btn-light">Сброс</button>
                         </form>
@@ -72,20 +75,22 @@
             <div class="div-table-sticky">
                 <table class="table table-hover">
                     <thead class="table-primary">
-                        <th>№</th>
-                        <th>Дата</th>
-                        <th>Время</th>
-                        <th>Длительность</th>
-                        <th>Станция Отправления</th>
-                        <th>Станция Прибытия</th>
-                        <th>Категория</th>
-                        <th>ФИО Пассажира</th>
-                        <th>Статус</th>
-                        <th>Количество сотрудников</th>
-                        <th>Участок</th>
-                        <th>ФИО Инспектора</th>
+                        <tr>
+                            <th>№</th>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Длительность</th>
+                            <th>Станция Отправления</th>
+                            <th>Станция Прибытия</th>
+                            <th>Категория</th>
+                            <th>ФИО Пассажира</th>
+                            <th>Статус</th>
+                            <th>Количество сотрудников</th>
+                            <th>Участок</th>
+                            <th>ФИО Инспектора</th>
+                        </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="searchable filter-hidden">
                         <tr th:each="dem: ${demands}">
                             <th th:text="${dem.id}" class="table-primary"></th>
                             <td th:text="${dem.datePlan}"></td>
@@ -111,5 +116,8 @@
             </div>
         </div>
         <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+        <script th:src="@{/js/jquery.cookie.js}"></script>
+        <script th:src="@{/js/main.js}"></script>
     </body>
 </html>

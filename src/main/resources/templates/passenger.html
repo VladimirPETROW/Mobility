@@ -54,19 +54,33 @@
                 </div>
             </div>
         </nav>
-        <div class="div-table-sticky">
+        <div class="div-table-action">
+            <div class="div-action container-fluid">
+                <div class="row">
+                    <div class="col-3">
+                    </div>
+                    <div class="col-6">
+                        <input id="filter" type="text" class="form-control filter-hidden" cookie="filter-passenger" placeholder="Начните писать (точка . обозначает любой знак, звездочка * обозначает любое количество знаков)">
+                    </div>
+                    <div class="col-3">
+                    </div>
+                </div>
+            </div>
+            <div class="div-table-sticky">
             <table class="table table-hover">
                 <thead class="table-primary">
-                    <th>ФИО</th>
-                    <th>Телефон</th>
-                    <th>М/Ж</th>
-                    <th>Категория</th>
-                    <th>Примечание</th>
-                    <th>ЭКС</th>
+                    <tr>
+                        <th>ФИО</th>
+                        <th>Телефон</th>
+                        <th>М/Ж</th>
+                        <th>Категория</th>
+                        <th>Примечание</th>
+                        <th>ЭКС</th>
+                    </tr>
                 </thead>
-                <tbody>
+                <tbody class="searchable filter-hidden">
                     <tr th:each="pas: ${passengers}">
-                        <th class="table-primary" th:text="${pas.name}"></td>
+                        <th th:text="${pas.name}" class="table-primary" ></th>
                         <td th:text="${pas.tel}"></td>
                         <td th:text="${pas.gender}"></td>
                         <td th:text="${pas.cat}"></td>
@@ -76,6 +90,10 @@
                 </tbody>
             </table>
         </div>
+        </div>
         <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+        <script th:src="@{/js/jquery.cookie.js}"></script>
+        <script th:src="@{/js/main.js}"></script>
     </body>
 </html>

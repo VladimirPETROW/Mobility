@@ -54,35 +54,53 @@
                 </div>
             </div>
         </nav>
-        <div class="div-table-sticky">
-            <table class="table table-hover">
-                <thead class="table-primary">
-                    <!--th>Логин</th-->
-                    <th>ФИО</th>
-                    <th>Участок</th>
-                    <th>Смена</th>
-                    <th>Начало</th>
-                    <th>Окончание</th>
-                    <th>Должность</th>
-                    <th>М/Ж</th>
-                    <th>Табельный номер</th>
-                </thead>
-                <tbody>
-                    <tr th:each="emp: ${employees}">
-                        <!--th class="table-primary" th:if="${emp.user==null}"></th>
-                        <th class="table-primary" th:if="${emp.user!=null}" th:text="${emp.user.username}"></th-->
-                        <th class="table-primary" th:text="${emp.nameFull}"></th>
-                        <td th:text="${emp.area}"></td>
-                        <td th:text="${emp.shift}"></td>
-                        <td th:text="${emp.timeBegin}"></td>
-                        <td th:text="${emp.timeEnd}"></td>
-                        <td th:text="${emp.rank}"></td>
-                        <td th:text="${emp.gender}"></td>
-                        <td th:text="${emp.num}"></td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="div-table-action">
+            <div class="div-action container-fluid">
+                <div class="row">
+                    <div class="col-3">
+                    </div>
+                    <div class="col-6">
+                        <input id="filter" type="text" class="form-control filter-hidden" cookie="filter-employee" placeholder="Начните писать (точка . обозначает любой знак, звездочка * обозначает любое количество знаков)">
+                    </div>
+                    <div class="col-3">
+                    </div>
+                </div>
+            </div>
+            <div class="div-table-sticky">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <!--th>Логин</th-->
+                            <th>ФИО</th>
+                            <th>Участок</th>
+                            <th>Смена</th>
+                            <th>Начало</th>
+                            <th>Окончание</th>
+                            <th>Должность</th>
+                            <th>М/Ж</th>
+                            <th>Табельный номер</th>
+                        </tr>
+                    </thead>
+                    <tbody class="searchable filter-hidden">
+                        <tr th:each="emp: ${employees}">
+                            <!--th class="table-primary" th:if="${emp.user==null}"></th>
+                            <th class="table-primary" th:if="${emp.user!=null}" th:text="${emp.user.username}"></th-->
+                            <th th:text="${emp.nameFull}" class="table-primary"></th>
+                            <td th:text="${emp.area}"></td>
+                            <td th:text="${emp.shift}"></td>
+                            <td th:text="${emp.timeBegin}"></td>
+                            <td th:text="${emp.timeEnd}"></td>
+                            <td th:text="${emp.rank}"></td>
+                            <td th:text="${emp.gender}"></td>
+                            <td th:text="${emp.num}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+        <script th:src="@{/js/jquery.cookie.js}"></script>
+        <script th:src="@{/js/main.js}"></script>
     </body>
 </html>

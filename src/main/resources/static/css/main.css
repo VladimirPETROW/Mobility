@@ -1,3 +1,7 @@
+body {
+    overflow-y: scroll;
+}
+
 .body-login {
   padding-top: 40px;
   padding-bottom: 40px;
@@ -72,10 +76,6 @@
 .div-table-sticky .table thead .points td:last-child {
     width: 50%;
 }
-.div-table-sticky .table thead .align-center {
-    vertical-align: middle;
-    text-align: center;
-}
 .div-table-sticky .table thead tr .time-point-left {
     border-left: 1px solid #000000;
     background-color: #ffffff;
@@ -119,5 +119,9 @@
 
 .time-date-other {
     background-color: #ffffff !important;
+}
+
+.filter-hidden {
+    visibility: hidden;
 }
 
