@@ -3,8 +3,6 @@ package com.mobility.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalTime;
-
 @Data
 @Entity
 public class Distance {

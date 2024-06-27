@@ -5,6 +5,8 @@ import com.mobility.entity.Employee;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -35,18 +37,34 @@ public class Distributor {
         datePlan = dPlan;
         distances = dists;
 
-        workers = emps.stream()
-                .map(emp -> new Worker(emp))
-                .peek(worker -> worker.setBeginEnd(dPlan))
-                .collect(Collectors.toList());
+        workers = new ArrayList<>(dems.size());
+        HashMap<Employee, Worker> empsWorkers = new HashMap<>();
+        for (Employee emp : emps) {
+            Worker worker = new Worker(emp);
+            workers.add(worker);
+            empsWorkers.put(emp, worker);
+            worker.setBeginEnd(dPlan);
+        }
 
-        remaining = dems.stream()
-                .peek(dem -> dem.getEmp().clear())
-                .filter(dem -> !cancelStatus.contains(dem.getStatus()))
-                .map(dem -> new Support(dem))
-                .collect(Collectors.toList());
+        remaining = new ArrayList<>(dems.size());
+        completed = new ArrayList<>(dems.size());
 
-        completed = new ArrayList<>(remaining.size());
+        for (Demand d : dems) {
+            if (Distributor.cancelStatus.contains(d.getStatus())) continue;
+            Support support = new Support(d);
+
+            List<Employee> demEmps = d.getEmp();
+            if (demEmps.isEmpty()) {
+                remaining.add(support);
+            }
+            else {
+                completed.add(support);
+                for (Employee emp : demEmps) {
+                    Worker worker = empsWorkers.get(emp);
+                    worker.addWork(support.track);
+                }
+            }
+        }
     }
 
     LinkedList<Worker> freeWorkers(List<Worker> workers, Track supportTrack, HashMap<Integer, HashMap<Integer, Integer>> distances) {
@@ -98,6 +116,7 @@ public class Distributor {
             }
             if (lunch) {
                 worker.dtReady = workerBegin;
+                worker.freeAfter = ChronoUnit.SECONDS.between(supportTrack.dtEnd, workerEnd);
                 free.add(worker);
             }
         }
@@ -143,6 +162,7 @@ public class Distributor {
     public void distribute() {
         Collections.sort(remaining, (s1, s2) -> s1.track.dtBegin.compareTo(s2.track.dtBegin));
         distribute(this::distributeSingleArea);
+        distribute(this::distributeFreeWorkers);
     }
 
     List<Worker> distributeSingleArea(Support support, List<Worker> freeWorkers) {
@@ -163,7 +183,15 @@ public class Distributor {
             Map.Entry<Integer, Area> entry = priorityAreas.ceilingEntry(countM);
             if (entry != null) {
                 Area demArea = entry.getValue();
-                Collections.sort(demArea.empM, (w1, w2) -> w1.dtReady.compareTo(w2.dtReady));
+                Collections.sort(demArea.empM, (w1, w2) -> {
+                    //int cmp = w1.dtReady.compareTo(w2.dtReady);
+                    int cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                    if (cmp == 0) {
+                        //cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                        cmp = w1.dtReady.compareTo(w2.dtReady);
+                    }
+                    return cmp;
+                });
                 List<Worker> demWorkers = new ArrayList<>(countM);
                 for (int i = 0; i < countM; i++) {
                     Worker worker = demArea.empM.poll();
@@ -190,8 +218,24 @@ public class Distributor {
                     entry = priorityAreas.lastEntry();
                 }
                 Area demArea = entry.getValue();
-                Collections.sort(demArea.empM, (w1, w2) -> w1.dtReady.compareTo(w2.dtReady));
-                Collections.sort(demArea.empF, (w1, w2) -> w1.dtReady.compareTo(w2.dtReady));
+                Collections.sort(demArea.empM, (w1, w2) -> {
+                    //int cmp = w1.dtReady.compareTo(w2.dtReady);
+                    int cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                    if (cmp == 0) {
+                        //cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                        cmp = w1.dtReady.compareTo(w2.dtReady);
+                    }
+                    return cmp;
+                });
+                Collections.sort(demArea.empF, (w1, w2) -> {
+                    //int cmp = w1.dtReady.compareTo(w2.dtReady);
+                    int cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                    if (cmp == 0) {
+                        //cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                        cmp = w1.dtReady.compareTo(w2.dtReady);
+                    }
+                    return cmp;
+                });
                 List<Worker> demWorkers = new ArrayList<>(countM + countF);
                 for (int i = 0; i < countM; i++) {
                     Worker worker = demArea.empM.poll();
@@ -207,6 +251,42 @@ public class Distributor {
                     Worker worker = demArea.empM.poll();
                     demWorkers.add(worker);
                 }
+                return demWorkers;
+            }
+        }
+        return null;
+    }
+
+    List<Worker> distributeFreeWorkers(Support support, List<Worker> freeWorkers) {
+        //Distribute free workers
+
+        int countM = support.demand.getEmpM();
+        int countF = support.demand.getEmpF();
+
+        Collections.sort(freeWorkers, (w1, w2) -> {
+            //int cmp = w1.dtReady.compareTo(w2.dtReady);
+            int cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+            if (cmp == 0) {
+                //cmp = Long.compare(w1.freeAfter, w2.freeAfter);
+                cmp = w1.dtReady.compareTo(w2.dtReady);
+            }
+            return cmp;
+        });
+        List<Worker> demWorkers = new ArrayList<>(countM + countF);
+        for (Worker worker : freeWorkers) {
+            if (worker.gender.equals(MALE)) {
+                if (countM > 0) {
+                    demWorkers.add(worker);
+                    countM--;
+                }
+            }
+            else {
+                if (countF > 0) {
+                    demWorkers.add(worker);
+                    countF--;
+                }
+            }
+            if ((countM == 0) && (countF == 0)) {
                 return demWorkers;
             }
         }

@@ -31,8 +31,22 @@ public class DemandService {
     EmployeeRepository employeeRepository;
 
     public List<Demand> findAll() {
-        List<Demand> demands = demandRepository.findAll();
+        List<Demand> demands = demandRepository.findAllByOrderById();
         return demands;
+    }
+
+    public Demand findById(long id) {
+        Demand demand = demandRepository.findById(id);
+        return demand;
+    }
+
+    public void save(Demand demand) {
+        demandRepository.save(demand);
+    }
+
+    public List<String> getStatuses() {
+        List<String> statuses = demandRepository.findStatuses();
+        return statuses;
     }
 
     HashMap<Integer, HashMap<Integer, Integer>> getDistances() {
@@ -102,7 +116,7 @@ public class DemandService {
         if (distributeDates.size() > 0) {
             HashMap<Integer, HashMap<Integer, Integer>> dists = getDistances();
 
-            List<Employee> employees = employeeRepository.findAll();
+            List<Employee> employees = employeeRepository.findAllByOrderByNameFull();
             LocalDate datePlan = distributeDates.get(0).toLocalDate();
             List<Demand> demands = demandRepository.findAllByDatePlan(datePlan);
             Timeline timeline = new Timeline(datePlan, demands, employees, dists);

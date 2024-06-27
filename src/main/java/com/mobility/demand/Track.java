@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 public class Track {
 
-    String caption;
     Integer stationBegin, stationEnd;
     public LocalDateTime dtBegin, dtEnd;
 

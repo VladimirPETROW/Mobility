@@ -17,6 +17,8 @@ public class Worker {
     public TreeMap<LocalDateTime, LocalDateTime> dtWork;
 
     LocalDateTime dtReady;
+    long freeAfter;
+
     Gender gender;
 
     public static int LUNCH_DURATION = 60; // minutes

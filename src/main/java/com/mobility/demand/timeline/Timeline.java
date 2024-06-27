@@ -9,7 +9,6 @@ import com.mobility.entity.Employee;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 
 public class Timeline {
@@ -29,10 +28,10 @@ public class Timeline {
         ArrayList<TreeMap<LocalDateTime, Way>> remainingTasks = new ArrayList<>();
         HashMap<Worker, ArrayList<TreeMap<LocalDateTime, Way>>> completedTasks = new HashMap<>();
 
-        HashMap<Employee, Worker> workers = new HashMap<>();
+        HashMap<Long, Worker> workers = new HashMap<>();
         for (Employee emp : emps) {
             Worker worker = new Worker(emp);
-            workers.put(emp, worker);
+            workers.put(emp.getId(), worker);
             worker.setBeginEnd(dPlan);
             for (Track track : worker.dtFree.values()) {
                 datetimes.add(track.dtBegin);
@@ -50,13 +49,13 @@ public class Timeline {
 
             List<Employee> demEmps = d.getEmp();
             if (demEmps.isEmpty()) {
-                addTask(new Way(support.getCaption(), support.track, Way.Kind.TASK), remainingTasks);
+                addTask(new Way(support.getCaption(), support.demand.getId(), support.track, Way.Kind.TASK), remainingTasks);
             }
             else {
                 for (Employee emp : demEmps) {
-                    Worker worker = workers.get(emp);
+                    Worker worker = workers.get(emp.getId());
                     ArrayList<TreeMap<LocalDateTime, Way>> tasks = completedTasks.get(worker);
-                    addTask(new Way(support.getCaption(), support.track, Way.Kind.TASK), tasks);
+                    addTask(new Way(support.getCaption(), support.demand.getId(), support.track, Way.Kind.TASK), tasks);
                     worker.addWork(support.track);
                 }
             }
@@ -88,6 +87,7 @@ public class Timeline {
 
         remaining = tasksToIntervals(remainingTasks, max);
         completed = new ArrayList<>();
+        HashMap<Employee, ArrayList<ArrayList<Way>>> empsCompleted = new HashMap<>();
         for (Map.Entry<Worker, ArrayList<TreeMap<LocalDateTime, Way>>> entry : completedTasks.entrySet()) {
             Worker worker = entry.getKey();
             ArrayList<TreeMap<LocalDateTime, Way>> tasks = entry.getValue();
@@ -96,10 +96,13 @@ public class Timeline {
                 addTask(new Way(caption, track, Way.Kind.FREE), tasks);
             }
             ArrayList<ArrayList<Way>> intervals = tasksToIntervals(tasks, max);
-            Map.Entry<Employee, ArrayList<ArrayList<Way>>> work = new AbstractMap.SimpleEntry<>(worker.employee, intervals);
+            empsCompleted.put(worker.employee, intervals);
+        }
+        for (Employee emp : emps) {
+            ArrayList<ArrayList<Way>> intervals = empsCompleted.get(emp);
+            Map.Entry<Employee, ArrayList<ArrayList<Way>>> work = new AbstractMap.SimpleEntry<>(emp, intervals);
             completed.add(work);
         }
-
     }
 
     void addTask(Way way, ArrayList<TreeMap<LocalDateTime, Way>> tasks) {

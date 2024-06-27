@@ -58,7 +58,7 @@
             <div class="div-action container-fluid">
                 <div class="row">
                     <div class="col-3">
-                        <form th:action="@{/demand/distribute}" method="post">
+                        <form th:action="@{/distribute}" method="post" class="form-redirect">
                             <button type="submit" class="btn btn-light">Распределение</button>
                         </form>
                     </div>
@@ -66,7 +66,7 @@
                         <input id="filter" type="text" class="form-control filter-hidden" cookie="filter-demand" placeholder="Начните писать (точка . обозначает любой знак, звездочка * обозначает любое количество знаков)">
                     </div>
                     <div class="col-3 text-end">
-                        <form th:action="@{/demand/clear}" method="post">
+                        <form th:action="@{/clear}" method="post" class="form-redirect">
                             <button type="submit" class="btn btn-light">Сброс</button>
                         </form>
                     </div>
@@ -91,7 +91,7 @@
                         </tr>
                     </thead>
                     <tbody class="searchable filter-hidden">
-                        <tr th:each="dem: ${demands}">
+                        <tr th:each="dem: ${demands}" th:id="${dem.id}" class="demand">
                             <th th:text="${dem.id}" class="table-primary"></th>
                             <td th:text="${dem.datePlan}"></td>
                             <td th:text="${dem.timePlan}"></td>

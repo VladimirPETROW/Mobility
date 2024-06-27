@@ -94,6 +94,7 @@ body {
     height: 56px;
     padding: 10px;
     background: #ffffff;
+    border-bottom: 1px solid #cccccc;
     z-index: 30;
 }
 .div-table-action .div-table-sticky {
@@ -125,3 +126,11 @@ body {
     visibility: hidden;
 }
 
+.demand {
+    cursor: pointer;
+}
+
+.invalid {
+    color: #ff0000 !important;
+    border-color: #ff0000 !important;
+}

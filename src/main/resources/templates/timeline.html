@@ -58,7 +58,7 @@
             <div class="div-action container-fluid">
                 <div class="row">
                     <div class="col-3">
-                        <form th:action="@{/timeline/distribute}" method="post">
+                        <form th:action="@{/distribute}" method="post" class="form-redirect">
                             <button type="submit" class="btn btn-light">Распределение</button>
                         </form>
                     </div>
@@ -66,7 +66,7 @@
                         <input id="filter" type="text" class="form-control filter-hidden" cookie="filter-timeline" placeholder="Начните писать (точка . обозначает любой знак, звездочка * обозначает любое количество знаков)">
                     </div>
                     <div class="col-3 text-end">
-                        <form th:action="@{/timeline/clear}" method="post">
+                        <form th:action="@{/clear}" method="post" class="form-redirect">
                             <button type="submit" class="btn btn-light">Сброс</button>
                         </form>
                     </div>
@@ -98,17 +98,17 @@
                                         <td th:if="${interval.isEmpty()}" th:colspan="${1 + interval.duration * 2}"></td>
                                         <th:block th:if="${interval.isTask()}">
                                             <td></td>
-                                            <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-remaining"></td>
+                                            <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" th:id="${interval.id}" class="task-remaining demand"></td>
                                         </th:block>
                                     </th:block>
                                     <th:block th:if="${!state.first && !state.last}">
                                         <td th:if="${interval.isEmpty()}" th:colspan="${interval.duration * 2}"></td>
-                                        <td th:if="${interval.isTask()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-remaining"></td>
+                                        <td th:if="${interval.isTask()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" th:id="${interval.id}" class="task-remaining demand"></td>
                                     </th:block>
                                     <th:block th:if="${state.last}">
                                         <td th:if="${interval.isEmpty()}" th:colspan="${(interval.duration * 2) + 1}"></td>
                                         <th:block th:if="${interval.isTask()}">
-                                            <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-remaining"></td>
+                                            <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" th:id="${interval.id}" class="task-remaining demand"></td>
                                             <td></td>
                                         </th:block>
                                     </th:block>
@@ -130,13 +130,13 @@
                                             </th:block>
                                             <th:block th:if="${interval.isTask()}">
                                                 <td></td>
-                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-completed"></td>
+                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" th:id="${interval.id}" class="task-completed demand"></td>
                                             </th:block>
                                         </th:block>
                                         <th:block th:if="${!state.first && !state.last}">
                                             <td th:if="${interval.isEmpty()}" th:colspan="${interval.duration * 2}"></td>
                                             <td th:if="${interval.isFree()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-free"></td>
-                                            <td th:if="${interval.isTask()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-completed"></td>
+                                            <td th:if="${interval.isTask()}" th:text="${interval.caption}" th:colspan="${interval.duration * 2}" th:id="${interval.id}" class="task-completed demand"></td>
                                         </th:block>
                                         <th:block th:if="${state.last}">
                                             <td th:if="${interval.isEmpty()}" th:colspan="${(interval.duration * 2) + 1}"></td>
@@ -145,7 +145,7 @@
                                                 <td></td>
                                             </th:block>
                                             <th:block th:if="${interval.isTask()}">
-                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" class="task-completed"></td>
+                                                <td th:text="${interval.caption}" th:colspan="${interval.duration * 2}" th:id="${interval.id}" class="task-completed demand"></td>
                                                 <td></td>
                                             </th:block>
                                         </th:block>

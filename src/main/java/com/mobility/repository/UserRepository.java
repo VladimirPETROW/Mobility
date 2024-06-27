@@ -1,6 +1,5 @@
 package com.mobility.repository;
 
-import com.mobility.entity.Employee;
 import com.mobility.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

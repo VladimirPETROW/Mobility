@@ -5,6 +5,7 @@ import com.mobility.demand.Track;
 public class Way {
 
     public String caption;
+    public long id;
     Track track;
     Kind kind;
     public int duration;
@@ -16,6 +17,13 @@ public class Way {
 
     public Way(String c, Track t, Kind k) {
         caption = c;
+        track = t;
+        kind = k;
+    }
+
+    public Way(String c, long i, Track t, Kind k) {
+        caption = c;
+        id = i;
         track = t;
         kind = k;
     }

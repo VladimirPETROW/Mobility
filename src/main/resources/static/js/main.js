@@ -15,13 +15,61 @@ $(document).ready(function () {
     $("#filter").trigger("keyup");
     $(".filter-hidden").removeClass("filter-hidden");
 
-    var form = $(".form-signin");
-    if (form) {
-        form.on("submit", function(event) {
-            $.each($.cookie(), function(name) {
-                $.removeCookie(name);
-            });
+    $(".form-signin").on("submit", function(event) {
+        $.each($.cookie(), function(name) {
+            $.removeCookie(name);
         });
-    }
+    });
+
+    $(".form-redirect").append("<input type='hidden' name='redirect' value='" + window.location.href + "'>");
+
+    $(".demand").on('click', function() {
+        window.location.href = "/demid?id=" + $(this).attr("id");
+    });
+
+    $(".validate").on("keyup", function() {
+        var regex = new RegExp("^" + $(this).attr("validregex") + "$", "i");
+        if (regex.test($(this).val())) {
+            $(this).removeClass("invalid");
+        }
+        else {
+            $(this).addClass("invalid");
+        }
+    });
+
+    $("#demInfo #edit").on("click", function() {
+        $("#demInfo").hide();
+        $("#demInfo *[dem]").each(function() {
+            var dem = "#demEdit #" + $(this).attr("dem");
+            var demVal = $(this).attr("demVal");
+            if (demVal) {
+                $(dem).val(demVal);
+            }
+            else {
+                $(dem).val($(this).text());
+            }
+            $(dem).trigger("keyup");
+        });
+        $("#demEdit").removeClass("d-none");
+    });
+
+    $("#demEdit #cancel").on("click", function(event) {
+        event.preventDefault();
+        $("#demEdit").addClass("d-none");
+        $("#demInfo").show();
+    });
+
+    $("#demEdit").on("submit", function(event) {
+        $("#demEdit .validate").each(function() {
+            $(this).trigger("keyup");
+        });
+        $("#demEdit .validate").each(function() {
+            if ($(this).hasClass("invalid")) {
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+
 });
 
