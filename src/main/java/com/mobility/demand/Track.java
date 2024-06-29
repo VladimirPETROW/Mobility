@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class Track {
 
-    Integer stationBegin, stationEnd;
+    public Integer stationBegin, stationEnd;
     public LocalDateTime dtBegin, dtEnd;
 
     public Track(LocalDateTime dtb, LocalDateTime dte) {
@@ -19,6 +19,18 @@ public class Track {
         dtBegin = dtb;
         stationEnd = ste;
         dtEnd = dte;
+    }
+
+    public long getMinutes() {
+        return ChronoUnit.MINUTES.between(dtBegin, dtEnd);
+    }
+
+    public long getMoveMinutes(HashMap<Integer, HashMap<Integer, Integer>> distances) {
+        long moveMinutes = 0;
+        if ((stationBegin != null) && (stationEnd != null) && (stationBegin != stationEnd)) {
+            moveMinutes = distances.get(stationBegin).get(stationEnd);
+        }
+        return moveMinutes;
     }
 
     public long getFreeMinutes(HashMap<Integer, HashMap<Integer, Integer>> distances) {

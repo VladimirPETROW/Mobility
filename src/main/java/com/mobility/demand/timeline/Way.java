@@ -31,6 +31,7 @@ public class Way {
     public enum Kind {
         EMPTY,
         FREE,
+        MOVE,
         TASK
     }
 
@@ -40,6 +41,10 @@ public class Way {
 
     public boolean isFree() {
         return kind == Kind.FREE;
+    }
+
+    public boolean isMove() {
+        return kind == Kind.MOVE;
     }
 
     public boolean isTask() {

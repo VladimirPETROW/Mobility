@@ -9,6 +9,7 @@ import com.mobility.entity.Employee;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class Timeline {
@@ -28,10 +29,10 @@ public class Timeline {
         ArrayList<TreeMap<LocalDateTime, Way>> remainingTasks = new ArrayList<>();
         HashMap<Worker, ArrayList<TreeMap<LocalDateTime, Way>>> completedTasks = new HashMap<>();
 
-        HashMap<Long, Worker> workers = new HashMap<>();
+        HashMap<Employee, Worker> workers = new HashMap<>();
         for (Employee emp : emps) {
             Worker worker = new Worker(emp);
-            workers.put(emp.getId(), worker);
+            workers.put(emp, worker);
             worker.setBeginEnd(dPlan);
             for (Track track : worker.dtFree.values()) {
                 datetimes.add(track.dtBegin);
@@ -53,10 +54,39 @@ public class Timeline {
             }
             else {
                 for (Employee emp : demEmps) {
-                    Worker worker = workers.get(emp.getId());
+                    Worker worker = workers.get(emp);
                     ArrayList<TreeMap<LocalDateTime, Way>> tasks = completedTasks.get(worker);
                     addTask(new Way(support.getCaption(), support.demand.getId(), support.track, Way.Kind.TASK), tasks);
                     worker.addWork(support.track);
+                }
+            }
+        }
+
+        for (Map.Entry<Worker, ArrayList<TreeMap<LocalDateTime, Way>>> entry : completedTasks.entrySet()) {
+            Worker worker = entry.getKey();
+            ArrayList<TreeMap<LocalDateTime, Way>> tasks = entry.getValue();
+            for (Track track : worker.dtFree.values()) {
+                String caption = worker.canLunch(track, dists) ? "Обед возможен" : "";
+                if ((track.stationBegin != null) && (track.stationEnd != null)) {
+                    if (track.getMinutes() >= Point.SCALE) {
+                        long dist = track.getMoveMinutes(dists);
+                        if (dist < Point.SCALE) {
+                            dist = Point.SCALE;
+                        }
+                        LocalDateTime dtMoveEnd = track.dtBegin.plusMinutes(dist);
+                        datetimes.add(dtMoveEnd);
+                        Track move = new Track(track.stationBegin, track.dtBegin, track.stationEnd, dtMoveEnd);
+                        addTask(new Way("", move, Way.Kind.MOVE), tasks);
+                        if (dtMoveEnd.isBefore(track.dtEnd)) {
+                            Track free = new Track(track.stationEnd, dtMoveEnd, track.stationEnd, track.dtEnd);
+                            addTask(new Way(caption, free, Way.Kind.FREE), tasks);
+                        }
+                    }
+                    else {
+                        addTask(new Way("", track, Way.Kind.MOVE), tasks);
+                    }
+                } else {
+                    addTask(new Way(caption, track, Way.Kind.FREE), tasks);
                 }
             }
         }
@@ -77,24 +107,29 @@ public class Timeline {
         ArrayList<Point> ps = new ArrayList<>(timemap.size());
         int max = -1;
         Iterator<Point> iterator = timemap.values().iterator();
+        LocalDateTime dt = timemap.firstKey().withMinute(0);
         while (iterator.hasNext()) {
             Point point = iterator.next();
+            while (dt.isBefore(point.datetime)) {
+                Point p = new Point(dt);
+                p.pos = ++max;
+                ps.add(p);
+                dt = dt.plusMinutes(Point.SCALE);
+            }
             point.pos = ++max;
             ps.add(point);
+            dt = point.datetime.plusMinutes(Point.SCALE);
         }
         points = ps;
         datetimesPoints = dts;
 
         remaining = tasksToIntervals(remainingTasks, max);
-        completed = new ArrayList<>();
+
+        completed = new ArrayList<>(completedTasks.size());
         HashMap<Employee, ArrayList<ArrayList<Way>>> empsCompleted = new HashMap<>();
         for (Map.Entry<Worker, ArrayList<TreeMap<LocalDateTime, Way>>> entry : completedTasks.entrySet()) {
             Worker worker = entry.getKey();
             ArrayList<TreeMap<LocalDateTime, Way>> tasks = entry.getValue();
-            for (Track track : worker.dtFree.values()) {
-                String caption = worker.canLunch(track, dists) ? "Обед возможен" : "";
-                addTask(new Way(caption, track, Way.Kind.FREE), tasks);
-            }
             ArrayList<ArrayList<Way>> intervals = tasksToIntervals(tasks, max);
             empsCompleted.put(worker.employee, intervals);
         }
@@ -153,8 +188,10 @@ public class Timeline {
                     row.add(interval);
                 }
                 int end = datetimesPoints.get(task.track.dtEnd).pos;
-                task.duration = end - begin;
-                row.add(task);
+                if (end > begin) {
+                    task.duration = end - begin;
+                    row.add(task);
+                }
                 pos = end;
             }
             if (pos < max) {

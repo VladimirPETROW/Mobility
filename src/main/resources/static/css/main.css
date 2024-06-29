@@ -114,6 +114,9 @@ body {
 .task-completed {
     background-color: #FFEBC2 !important;
 }
+.task-move {
+    background-color: #AFE2AC !important; '#788CAA
+}
 .task-free {
     background-color: #C6FFC2 !important;
 }

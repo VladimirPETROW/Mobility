@@ -1,18 +1,28 @@
 package com.mobility.demand.timeline;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 public class Point {
 
     public LocalDateTime datetime;
     public int pos;
 
-    Point(LocalDateTime dt) {
-        LocalDateTime ceiling = dt.truncatedTo(ChronoUnit.MINUTES);
-        if (ceiling.isBefore(dt)) {
-            ceiling = ceiling.plusMinutes(1);
+    static final int SCALE = 15; //minutes
+    static final int MINUTE_ROUND_UP = 8;
+    static final int SECOND_ROUND_UP = 30;
+
+    public Point(LocalDateTime dt) {
+        int second = dt.getSecond();
+        dt = dt.withSecond(0);
+        if (second >= SECOND_ROUND_UP) {
+            dt = dt.plusMinutes(1);
         }
-        datetime = ceiling;
+        int minute = dt.getMinute();
+        int m = (minute / SCALE) * SCALE;
+        dt = dt.withMinute(m);
+        if ((minute - m) >= MINUTE_ROUND_UP) {
+            dt = dt.plusMinutes(SCALE);
+        }
+        datetime = dt;
     }
 }

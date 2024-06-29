@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.mobility</groupId>
     <artifactId>mobility</artifactId>
-    <version>3.0</version>
+    <version>4.0</version>
     <packaging>jar</packaging>
     <name>Mobility</name>
     <description>Metro mobility application</description>

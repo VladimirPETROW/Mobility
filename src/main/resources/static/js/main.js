@@ -1,10 +1,17 @@
-$(document).ready(function () {
-    $("#filter").on("keyup", function () {
+$(document).ready(function() {
+    $("#filter").on("keyup", function() {
         var txt = $.trim($(this).val());
         var regex = new RegExp(txt, "i");
         $(".searchable tr").hide();
-        $(".searchable tr").filter(function () {
-            return regex.test($(this).text());
+        $(".searchable tr").filter(function() {
+            var test = false;
+            $(this).children().each(function() {
+                if (regex.test($(this).text()) || regex.test($(this).attr("title"))) {
+                    test = true;
+                    return false;
+                }
+            });
+            return test;
         }).show();
         $.cookie($("#filter").attr("cookie"), txt);
     });
